@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import geRoutes from "./routes/ge.js";
 import merchantRoutes from "./routes/merchant.js";
+import snapshotsRoutes from "./routes/snapshots.js";
 import vosRoutes from "./routes/vos.js";
 import { apiLimiter } from "./middleware/rateLimit.js";
 
@@ -17,9 +18,11 @@ app.get("/health", (_req, res) => {
 
 app.use("/v1/ge", geRoutes);
 app.use("/v1/merchant", merchantRoutes);
+app.use("/v1/snapshots", snapshotsRoutes);
 app.use("/v1/vos", vosRoutes);
 app.use("/api/v1/ge", geRoutes);
 app.use("/api/v1/merchant", merchantRoutes);
+app.use("/api/v1/snapshots", snapshotsRoutes);
 app.use("/api/v1/vos", vosRoutes);
 
 export default app;

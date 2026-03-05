@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id        Int        @id @default(autoincrement())
+  username  String     @unique
+  snapshots Snapshot[]
+}
+
+model Snapshot {
+  id         Int      @id @default(autoincrement())
+  playerId   Int
+  capturedAt DateTime @default(now())
+  payload    Json
+  player     Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@index([playerId, capturedAt])
+}
