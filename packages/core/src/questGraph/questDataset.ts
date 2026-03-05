@@ -1,0 +1,56 @@
+export type QuestRequirements = {
+  skills: Record<string, number>;
+  quests: string[];
+};
+
+export type QuestDefinition = {
+  name: string;
+  requirements: QuestRequirements;
+  rewards?: Record<string, string>;
+};
+
+export const QUEST_DATASET: QuestDefinition[] = [
+  {
+    name: "Priest in Peril",
+    requirements: { skills: {}, quests: [] },
+    rewards: { area_unlock: "Morytania" }
+  },
+  {
+    name: "Nature Spirit",
+    requirements: { skills: { crafting: 18 }, quests: ["Priest in Peril"] },
+    rewards: { area_unlock: "Mort Myre Swamp" }
+  },
+  {
+    name: "The Restless Ghost",
+    requirements: { skills: {}, quests: [] },
+    rewards: { item_unlock: "Ghostspeak amulet" }
+  },
+  {
+    name: "Temple at Senntisten",
+    requirements: { skills: { magic: 50 }, quests: ["The Restless Ghost"] },
+    rewards: { ability_unlock: "Ancient Curses" }
+  },
+  {
+    name: "Underground Pass",
+    requirements: { skills: { agility: 50 }, quests: [] },
+    rewards: { area_unlock: "West Ardougne access" }
+  },
+  {
+    name: "Biohazard",
+    requirements: { skills: {}, quests: ["Underground Pass"] },
+    rewards: { area_unlock: "Ardougne gate access" }
+  },
+  {
+    name: "Plague's End",
+    requirements: {
+      skills: { agility: 75, construction: 75, crafting: 75, herblore: 75 },
+      quests: ["Underground Pass", "Biohazard", "Temple at Senntisten"]
+    },
+    rewards: { area_unlock: "Prifddinas" }
+  },
+  {
+    name: "Player Owned Ports",
+    requirements: { skills: { construction: 90 }, quests: [] },
+    rewards: { system_unlock: "Player Owned Ports" }
+  }
+];

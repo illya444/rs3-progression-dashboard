@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { fetchProfile, fetchQuests } from "@rs3/connectors";
-import { getNextTargets } from "@rs3/core";
+import { getNextQuestTargets, getNextTargets } from "@rs3/core";
 import { TtlCache } from "./cache.js";
 
 dotenv.config();
@@ -70,6 +70,37 @@ app.get("/next-targets/:username", async (req, res) => {
       username,
       priorities,
       fetchedAtIso: snapshot.fetchedAtIso
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    res.status(502).json({ error: message });
+  }
+});
+
+app.get("/targets/:username", async (req, res) => {
+  try {
+    const username = String(req.params.username);
+    const activities = 20;
+    const profileKey = `runemetrics:profile:${username}:${activities}`;
+    const questKey = `runemetrics:quests:${username}`;
+
+    const cachedProfile = cache.get<Awaited<ReturnType<typeof fetchProfile>>>(profileKey);
+    const cachedQuests = cache.get<Awaited<ReturnType<typeof fetchQuests>>>(questKey);
+
+    const profile = cachedProfile ?? (await fetchProfile(username, activities));
+    const quests = cachedQuests ?? (await fetchQuests(username));
+
+    if (!cachedProfile) {
+      cache.set(profileKey, profile, PROFILE_TTL_MS);
+    }
+    if (!cachedQuests) {
+      cache.set(questKey, quests, QUESTS_TTL_MS);
+    }
+
+    const recommendations = getNextQuestTargets(profile, quests);
+    res.json({
+      player: username.toLowerCase(),
+      recommendations
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
