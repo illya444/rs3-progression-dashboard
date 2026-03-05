@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "packageManager": "pnpm@9.15.5",
   "scripts": {
-    "build": "pnpm -r build",
-    "dev:api": "pnpm --filter api dev",
-    "typecheck": "pnpm -r typecheck",
+    "build": "corepack pnpm -r build",
+    "dev:api": "corepack pnpm --filter api dev",
+    "typecheck": "corepack pnpm -r typecheck",
     "test": "vitest",
     "validate:runemetrics": "node scripts/validate-runemetrics.mjs",
     "lint": "eslint .",
