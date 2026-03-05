@@ -12,3 +12,5 @@ export * from "./unlocks/unlockScoring.js";
 export * from "./graph/graphBuilder.js";
 export * from "./graph/dependencySolver.js";
 export * from "./graph/pathPlanner.js";
+export * from "./goals/goalTemplates.js";
+export * from "./goals/goalPlanner.js";
