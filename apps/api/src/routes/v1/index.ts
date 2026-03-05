@@ -1,9 +1,9 @@
 import { Router } from "express"
 import quests from "./quests"
 import runemetrics from "./runemetrics"
-import ge from "./ge"
-import vos from "./vos"
-import merchant from "./merchant"
+import ge from "./intelligence/ge"
+import merchant from "./intelligence/merchant"
+import vos from "./intelligence/vos"
 import history from "./history"
 import goalPath from "./goalPath"
 

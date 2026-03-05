@@ -1,10 +1,11 @@
 import axios from "axios"
 
-export async function getMerchantStock() {
+export async function fetchMerchantStock() {
 
-  const res = await axios.get(
-    "https://api.weirdgloop.org/runescape/tms/current"
+  const response = await axios.get(
+    "https://api.weirdgloop.org/merchant"
   )
 
-  return res.data
+  return response.data
+
 }

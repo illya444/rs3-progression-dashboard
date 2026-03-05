@@ -1,6 +1,10 @@
 import cron from "node-cron"
-import { updateActivities } from "./activityWorker"
+import { runIntelligenceSync } from "./intelligenceWorker"
 
-cron.schedule("0 * * * *", () => {
-  updateActivities()
-})
+export function startSchedulers(redis: any) {
+
+  cron.schedule("*/30 * * * *", () => {
+    runIntelligenceSync(redis)
+  })
+
+}

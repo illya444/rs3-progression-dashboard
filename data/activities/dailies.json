@@ -1,7 +1,4 @@
 [
-  {
-    "id": "travelling_merchant",
-    "type": "activity",
-    "requirements": []
-  }
+  { "id": "reaper_task", "description": "Complete Reaper task" },
+  { "id": "guthixian_cache", "description": "Do Guthixian Cache" }
 ]
