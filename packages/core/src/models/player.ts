@@ -4,6 +4,8 @@ export type SkillSnapshot = {
   level: number;
   xp: number;
   rank: number;
+  rawXp?: number;
+  warnings?: string[];
 };
 
 export type PlayerSnapshot = {
@@ -13,4 +15,5 @@ export type PlayerSnapshot = {
   combatlevel: number;
   skills: SkillSnapshot[];
   fetchedAtIso: string;
+  warnings?: string[];
 };
