@@ -14,7 +14,8 @@
   "dependencies": {
     "@rs3/core": "workspace:*",
     "axios": "^1.7.0",
-    "ioredis": "^5.10.0"
+    "ioredis": "^5.10.0",
+    "pg": "^8.20.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
