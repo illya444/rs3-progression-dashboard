@@ -1,21 +1,15 @@
-import { db } from "../connectors/db/postgres"
+export type XpHistoryPoint = {
+  createdAt: string;
+  totalXp: number;
+};
 
-export async function getXpHistory(username: string) {
-
-  const result = await db.query(
-    `
-    SELECT
-      player_snapshots.created_at,
-      player_snapshots.total_xp
-    FROM player_snapshots
-    JOIN players
-    ON players.id = player_snapshots.player_id
-    WHERE players.username = $1
-    ORDER BY created_at
-    `,
-    [username]
-  )
-
-  return result.rows
-
+export function normalizeXpHistory(
+  rows: Array<{ created_at?: unknown; total_xp?: unknown }>
+): XpHistoryPoint[] {
+  return rows
+    .map((row) => ({
+      createdAt: String(row.created_at ?? ""),
+      totalXp: Number(row.total_xp ?? 0)
+    }))
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 }
