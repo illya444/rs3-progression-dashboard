@@ -7,7 +7,7 @@
     "build": "pnpm -r build",
     "dev:api": "pnpm --filter api dev",
     "typecheck": "pnpm -r typecheck",
-    "test": "vitest run",
+    "test": "vitest",
     "validate:runemetrics": "node scripts/validate-runemetrics.mjs",
     "lint": "eslint .",
     "format": "prettier --write ."

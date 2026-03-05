@@ -1,53 +1,79 @@
-# rs3-progression-dashboard
-RS3 Progression Dashboard - data-driven progression engine integrating RuneMetrics, Weird Gloop APIs, and activity planning systems.
+# RS3 Progression Intelligence System
 
-## Local Dev
+A strategic RuneScape 3 progression engine that converts player data,
+game knowledge, and economic information into prioritized gameplay
+recommendations.
 
-### Install
+This project guides accounts through the progression path:
 
-```bash
-pnpm install
-```
+New Account
+→ Quest Cape
+→ Invention Infrastructure
+→ PvM Engine
+→ Max Cape
+→ Completionist
+→ Trimmed Completionist
 
-### Run API
+## Core Doctrine
 
-```bash
-pnpm --filter api dev
-```
+Structure > Speed
+Permanent Unlocks > XP Efficiency
+No Random Progression
+No Backtracking
 
-### Sample requests
+## System Purpose
 
-```bash
-curl http://localhost:3000/health
-curl http://localhost:3000/runemetrics/illya444
-curl http://localhost:3000/quests/illya444
-curl http://localhost:3000/next-targets/illya444
-curl http://localhost:3000/targets/illya444
-```
+The system answers:
 
-## Validation
+What should this account do next?
 
-```bash
-pnpm -r typecheck
-pnpm -r build
-```
+## Architecture Overview
 
-Sample `/targets/:username` response:
+External APIs
+    RuneMetrics
+    RuneScape Wiki
+    WeirdGloop
 
-```json
-{
-  "username": "illya444",
-  "fetchedAtIso": "2026-03-05T00:00:00.000Z",
-  "recommendations": [
-    {
-      "title": "Unlock Prifddinas Access",
-      "type": "infrastructure",
-      "score": 962,
-      "reasons": ["High-value city unlock"]
-    }
-  ],
-  "blockedTopReasons": [
-    "Plague's End: train herblore 72->75"
-  ]
-}
-```
+↓
+
+Connector Layer
+
+↓
+
+Normalization Layer
+
+↓
+
+Cache Layer
+
+↓
+
+Decision Engine
+
+↓
+
+Web Dashboard
+
+## Repository Structure
+
+Documented layout:
+
+apps/
+  api/
+  web/
+
+packages/
+  connectors/
+  core/
+
+data/
+
+docs/
+
+## Example Output
+
+1 Complete Sliske's Endgame
+2 Train Herblore to 90
+3 Buy Travelling Merchant Item
+4 Train Invention to 80
+5 Start River of Blood
