@@ -43,25 +43,38 @@ function toQuestStatus(raw: string): QuestStatus {
 
 export function normalizeProfile(username: string, raw: RuneMetricsProfileResponse): PlayerSnapshot {
   const fetchedAtIso = new Date().toISOString();
+  let warnedSkills = 0;
 
   const skills: SkillSnapshot[] = (raw.skillvalues ?? []).map((sv) => {
-    const mappedXp = sv.rank;
-    const mappedRank = sv.xp;
+    const skillName = SKILL_NAMES_BY_ID[sv.id] ?? `Skill-${sv.id}`;
+    const rawXp = sv.xp;
+    let xp = Number.isFinite(rawXp) ? rawXp : 0;
+    const warnings: string[] = [];
 
-    if (mappedXp > 200_000_000) {
-      throw new Error(
-        `RuneMetrics skill XP sanity check failed for id=${sv.id}: ${JSON.stringify(sv)}`
+    if (!Number.isFinite(rawXp) || rawXp < 0) {
+      xp = 0;
+      warnings.push(`RuneMetrics XP out of bounds for id=${sv.id} (${skillName}): ${rawXp}; clamped to 0`);
+    } else if (rawXp > 200_000_000) {
+      xp = 200_000_000;
+      warnings.push(
+        `RuneMetrics XP out of bounds for id=${sv.id} (${skillName}): ${rawXp}; clamped to 200000000`
       );
     }
 
+    if (warnings.length > 0) warnedSkills += 1;
+
     return {
       id: sv.id,
-      name: SKILL_NAMES_BY_ID[sv.id] ?? `Skill-${sv.id}`,
+      name: skillName,
       level: sv.level,
-      xp: mappedXp,
-      rank: mappedRank
+      xp,
+      rank: sv.rank,
+      rawXp,
+      warnings: warnings.length > 0 ? warnings : undefined
     };
   });
+
+  skills.sort((a, b) => a.id - b.id);
 
   return {
     username,
@@ -69,7 +82,11 @@ export function normalizeProfile(username: string, raw: RuneMetricsProfileRespon
     totalxp: raw.totalxp,
     combatlevel: raw.combatlevel,
     skills,
-    fetchedAtIso
+    fetchedAtIso,
+    warnings:
+      warnedSkills > 0
+        ? [`RuneMetrics returned out-of-bounds XP for ${warnedSkills} skills; values were clamped`]
+        : undefined
   };
 }
 
