@@ -1,10 +1,10 @@
 [
   {
     "id": "temple_at_senntisten",
-    "name": "Temple at Senntisten",
+    "type": "quest",
     "requirements": [
-      "the_dig_site",
-      "desert_treasure"
+      "desert_treasure",
+      "the_dig_site"
     ]
   }
 ]

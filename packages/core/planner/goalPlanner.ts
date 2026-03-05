@@ -1,10 +1,12 @@
+import { progressionGraph } from "@rs3/core"
+
 export interface GoalTemplate {
   id: string
   name: string
   targets: string[]
 }
 
-export function planGoal(goal: GoalTemplate, graph: any) {
+export function planGoal(goal: GoalTemplate, graph: any = progressionGraph) {
 
   const steps: string[] = []
 

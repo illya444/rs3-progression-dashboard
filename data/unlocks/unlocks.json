@@ -1,7 +1,9 @@
 [
   {
-    "id": "prifddinas",
-    "name": "Prifddinas",
-    "requires": ["plagues_end"]
+    "id": "curses",
+    "type": "unlock",
+    "requirements": [
+      "temple_at_senntisten"
+    ]
   }
 ]
