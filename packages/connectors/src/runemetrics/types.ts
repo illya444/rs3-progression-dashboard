@@ -1,7 +1,9 @@
 export type RuneMetricsSkill = {
   id: number;
   level: number;
+  // RuneMetrics profile payload currently returns this field as rank-like data.
   xp: number;
+  // RuneMetrics profile payload currently returns this field as xp-like data.
   rank: number;
 };
 

@@ -44,13 +44,24 @@ function toQuestStatus(raw: string): QuestStatus {
 export function normalizeProfile(username: string, raw: RuneMetricsProfileResponse): PlayerSnapshot {
   const fetchedAtIso = new Date().toISOString();
 
-  const skills: SkillSnapshot[] = (raw.skillvalues ?? []).map((sv) => ({
-    id: sv.id,
-    name: SKILL_NAMES_BY_ID[sv.id] ?? `Skill-${sv.id}`,
-    level: sv.level,
-    xp: sv.xp,
-    rank: sv.rank
-  }));
+  const skills: SkillSnapshot[] = (raw.skillvalues ?? []).map((sv) => {
+    const mappedXp = sv.rank;
+    const mappedRank = sv.xp;
+
+    if (mappedXp > 200_000_000) {
+      throw new Error(
+        `RuneMetrics skill XP sanity check failed for id=${sv.id}: ${JSON.stringify(sv)}`
+      );
+    }
+
+    return {
+      id: sv.id,
+      name: SKILL_NAMES_BY_ID[sv.id] ?? `Skill-${sv.id}`,
+      level: sv.level,
+      xp: mappedXp,
+      rank: mappedRank
+    };
+  });
 
   return {
     username,
