@@ -9,3 +9,6 @@ export * from "./questGraph/questResolver.js";
 export * from "./unlocks/unlockDataset.js";
 export * from "./unlocks/unlockResolver.js";
 export * from "./unlocks/unlockScoring.js";
+export * from "./graph/graphBuilder.js";
+export * from "./graph/dependencySolver.js";
+export * from "./graph/pathPlanner.js";
