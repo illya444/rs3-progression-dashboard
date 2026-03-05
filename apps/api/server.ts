@@ -15,6 +15,7 @@ const cache = new TtlCache();
 
 const PROFILE_TTL_MS = 10 * 60 * 1000;
 const QUESTS_TTL_MS = 6 * 60 * 60 * 1000;
+const RM_BASE = "https://apps.runescape.com/runemetrics";
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
@@ -54,6 +55,42 @@ app.get("/quests/:username", async (req, res) => {
     res.json(snapshot);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
+    res.status(502).json({ error: message });
+  }
+});
+
+app.get("/debug/runemetrics/profile/:username", async (req, res) => {
+  try {
+    const username = String(req.params.username);
+    const activitiesRaw = req.query.activities ? Number(req.query.activities) : 20;
+    const activities = Number.isFinite(activitiesRaw) ? activitiesRaw : 20;
+    const url = `${RM_BASE}/profile/profile?user=${encodeURIComponent(username)}&activities=${activities}`;
+
+    const upstream = await fetch(url);
+    const payload = await upstream.json();
+
+    res.setHeader("X-Debug-Endpoint", "true");
+    res.status(upstream.status).json(payload);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    res.setHeader("X-Debug-Endpoint", "true");
+    res.status(502).json({ error: message });
+  }
+});
+
+app.get("/debug/runemetrics/quests/:username", async (req, res) => {
+  try {
+    const username = String(req.params.username);
+    const url = `${RM_BASE}/profile/quests?user=${encodeURIComponent(username)}`;
+
+    const upstream = await fetch(url);
+    const payload = await upstream.json();
+
+    res.setHeader("X-Debug-Endpoint", "true");
+    res.status(upstream.status).json(payload);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    res.setHeader("X-Debug-Endpoint", "true");
     res.status(502).json({ error: message });
   }
 });
