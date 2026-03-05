@@ -77,6 +77,38 @@ app.get("/next-targets/:username", async (req, res) => {
   }
 });
 
+app.get("/diagnostics/:username", async (req, res) => {
+  try {
+    const username = String(req.params.username);
+    const activities = 20;
+    const key = `runemetrics:profile:${username}:${activities}`;
+
+    const cached = cache.get<Awaited<ReturnType<typeof fetchProfile>>>(key);
+    const snapshot = cached ?? (await fetchProfile(username, activities));
+    if (!cached) {
+      cache.set(key, snapshot, PROFILE_TTL_MS);
+    }
+
+    const skillsWithWarnings = snapshot.skills
+      .filter((skill) => Array.isArray(skill.warnings) && skill.warnings.length > 0)
+      .map((skill) => ({
+        id: skill.id,
+        name: skill.name,
+        warnings: skill.warnings
+      }));
+
+    res.json({
+      username,
+      warnings: snapshot.warnings,
+      skillsWithWarnings,
+      fetchedAtIso: snapshot.fetchedAtIso
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    res.status(502).json({ error: message });
+  }
+});
+
 app.get("/debug/runemetrics/profile/:username", async (req, res) => {
   try {
     const username = String(req.params.username);
