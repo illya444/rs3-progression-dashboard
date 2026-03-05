@@ -29,6 +29,9 @@ importers:
       '@rs3/connectors':
         specifier: workspace:*
         version: link:../../packages/connectors
+      '@rs3/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       cors:
         specifier: ^2.8.5
         version: 2.8.6

@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { fetchProfile, fetchQuests } from "@rs3/connectors";
+import { getNextTargets } from "@rs3/core";
 import { TtlCache } from "./cache.js";
 
 dotenv.config();
@@ -53,6 +54,23 @@ app.get("/quests/:username", async (req, res) => {
     cache.set(key, snapshot, QUESTS_TTL_MS);
 
     res.json(snapshot);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    res.status(502).json({ error: message });
+  }
+});
+
+app.get("/next-targets/:username", async (req, res) => {
+  try {
+    const username = String(req.params.username);
+    const snapshot = await fetchProfile(username, 20);
+    const { priorities } = getNextTargets(snapshot);
+
+    res.json({
+      username,
+      priorities,
+      fetchedAtIso: snapshot.fetchedAtIso
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     res.status(502).json({ error: message });
