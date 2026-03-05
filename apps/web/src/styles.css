@@ -1,0 +1,89 @@
+:root {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  color: #0b1f33;
+  background: radial-gradient(circle at 20% 0%, #f8fbff, #e4edf8 60%, #d8e4f2 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.dashboard {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.dashboard-header {
+  margin-bottom: 1rem;
+}
+
+h1 {
+  margin: 0 0 0.75rem;
+  font-size: 2rem;
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+input {
+  flex: 1;
+  min-width: 220px;
+  border: 1px solid #b8c8db;
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+}
+
+button {
+  border: none;
+  background: #0f5ea8;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.9rem;
+}
+
+.card {
+  background: #ffffffde;
+  border: 1px solid #d2ddeb;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 6px 20px rgba(8, 36, 68, 0.08);
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+.list {
+  margin: 0.6rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.numbered {
+  list-style: decimal;
+}
+
+.error {
+  color: #b31539;
+  margin: 0.8rem 0 0;
+}
