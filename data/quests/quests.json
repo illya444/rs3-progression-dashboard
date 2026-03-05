@@ -1,0 +1,10 @@
+[
+  {
+    "id": "temple_at_senntisten",
+    "name": "Temple at Senntisten",
+    "requirements": [
+      "the_dig_site",
+      "desert_treasure"
+    ]
+  }
+]

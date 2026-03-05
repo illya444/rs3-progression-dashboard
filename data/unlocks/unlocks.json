@@ -1,0 +1,7 @@
+[
+  {
+    "id": "prifddinas",
+    "name": "Prifddinas",
+    "requires": ["plagues_end"]
+  }
+]
