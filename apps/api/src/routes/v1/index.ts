@@ -5,6 +5,7 @@ import ge from "./ge"
 import vos from "./vos"
 import merchant from "./merchant"
 import history from "./history"
+import goalPath from "./goalPath"
 
 const router = Router()
 
@@ -14,5 +15,6 @@ router.use("/ge", ge)
 router.use("/vos", vos)
 router.use("/merchant", merchant)
 router.use("/history", history)
+router.use("/goal", goalPath)
 
 export default router
