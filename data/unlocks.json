@@ -1,42 +1,13 @@
 [
   {
-    "id": "unlock-prifddinas",
-    "name": "Prifddinas Access",
-    "gateQuestId": "plagues-end",
-    "weight": 100,
-    "category": "infrastructure",
-    "rationale": "Massive skilling, bossing, and utility hub unlocked by Plague's End."
-  },
-  {
-    "id": "unlock-ancient-curses",
-    "name": "Ancient Curses",
-    "gateQuestId": "temple-at-senntisten",
-    "weight": 85,
-    "category": "pvm_engine",
-    "rationale": "Major PvM prayer upgrades for survivability and DPS."
-  },
-  {
-    "id": "unlock-sunspear",
-    "name": "Sunspear Progression",
-    "gateQuestId": "river-of-blood",
-    "weight": 92,
-    "category": "pvm_engine",
-    "rationale": "Darkmeyer line completion unlocks strong combat progression tools."
-  },
-  {
-    "id": "unlock-ports",
-    "name": "Player Owned Ports",
-    "gateQuestId": "impressing-the-locals",
-    "weight": 70,
-    "category": "infrastructure",
-    "rationale": "Long-tail account progression and resource generation system."
-  },
-  {
-    "id": "unlock-vampyre-line",
-    "name": "Vampyre Questline Core",
-    "gateQuestId": "the-lord-of-vampyrium",
-    "weight": 68,
-    "category": "quest_unlock",
-    "rationale": "Enables River of Blood chain and key Morytania progression."
+    "id": "temple_at_senntisten",
+    "name": "Temple at Senntisten",
+    "requires": {
+      "quests": [],
+      "skills": {}
+    },
+    "unlocks": [
+      "ancient_curses"
+    ]
   }
 ]

@@ -1,17 +1,26 @@
-import express from "express"
-import v1Routes from "./routes/v1"
-import { apiLimiter } from "./middleware/rateLimit"
-import { progressionGraph } from "../../../packages/core"
+import cors from "cors";
+import express from "express";
+import profileRoutes from "./routes/profile.js";
+import questsRoutes from "./routes/quests.js";
+import recommendationsRoutes from "./routes/recommendations.js";
 
-declare global {
-  var progressionGraph: unknown
-}
+const app = express();
 
-const app = express()
+app.use(cors());
+app.use(express.json());
 
-global.progressionGraph = progressionGraph
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
 
-app.use("/api", apiLimiter)
-app.use("/api/v1", v1Routes)
+app.use("/api/v1/profile", profileRoutes);
+app.use("/api/v1/quests", questsRoutes);
+app.use("/api/v1/recommendations", recommendationsRoutes);
+app.use("/api/v1/runemetrics", profileRoutes);
 
-export default app
+// Compatibility aliases for existing clients.
+app.use("/runemetrics", profileRoutes);
+app.use("/quests", questsRoutes);
+app.use("/recommendations", recommendationsRoutes);
+
+export default app;

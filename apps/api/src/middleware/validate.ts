@@ -10,7 +10,7 @@ export const validate =
     if (!result.success) {
       return res.status(400).json({
         error: "Invalid request",
-        details: result.error.errors
+        details: result.error.issues
       })
     }
 

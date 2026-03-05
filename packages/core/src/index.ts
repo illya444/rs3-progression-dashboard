@@ -1,5 +1,6 @@
 export * from "./models/player.js";
 export * from "./models/quests.js";
+export { getIntelligenceTargets } from "./intelligence/getNextTargets.js";
 export * from "./analysis/nextTargets.js";
 export * from "./analysis/nextQuestTargets.js";
 export * from "./questGraph/questDataset.js";
