@@ -6,6 +6,9 @@ import { normalizeProfile, normalizeQuests } from "@rs3/normalizers";
 import { getIntelligenceTargets } from "@rs3/core";
 import { validate } from "../middleware/validate.js";
 import { usernameSchema } from "../schemas/username.js";
+import { cache } from "../services/cache.js";
+import { config } from "../config/config.js";
+import { recordFallbackResponse, recordUpstreamFailure } from "../logger.js";
 
 type UnlockRow = { id: string; name: string };
 
@@ -22,16 +25,43 @@ function loadUnlocks(): UnlockRow[] {
 }
 
 router.get("/:username", validate(usernameSchema), async (req, res) => {
-  const [rawProfile, rawQuests] = await Promise.all([
-    fetchProfile(req.params.username),
-    fetchQuests(req.params.username)
-  ]);
+  const cacheKey = `v1:recommendations:${req.params.username}`;
+  const cached = await cache.get<{ priorities: string[] }>(cacheKey);
+  if (cached) {
+    return res.json(cached);
+  }
 
-  const profile = normalizeProfile(rawProfile as Record<string, unknown>);
-  const quests = normalizeQuests(rawQuests as { quests?: Array<{ title?: string; status?: string }> });
-  const recommendations = getIntelligenceTargets({ profile, quests, unlocks: loadUnlocks() });
+  try {
+    const [rawProfile, rawQuests] = await Promise.all([
+      Promise.race([
+        fetchProfile(req.params.username),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Recommendations profile timeout")), config.upstreamTimeoutMs)
+        )
+      ]),
+      Promise.race([
+        fetchQuests(req.params.username),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Recommendations quests timeout")), config.upstreamTimeoutMs)
+        )
+      ])
+    ]);
 
-  res.json(recommendations);
+    const profile = normalizeProfile(rawProfile as Record<string, unknown>);
+    const quests = normalizeQuests(rawQuests as { quests?: Array<{ title?: string; status?: string }> });
+    const recommendations = getIntelligenceTargets({ profile, quests, unlocks: loadUnlocks() });
+    await cache.set(cacheKey, recommendations, config.cacheTtlSeconds);
+
+    return res.json(recommendations);
+  } catch (error) {
+    recordUpstreamFailure("recommendations", error);
+    const fallback = await cache.get<{ priorities: string[] }>(cacheKey);
+    if (fallback) {
+      recordFallbackResponse("recommendations");
+      return res.json(fallback);
+    }
+    return res.status(502).json({ error: "Recommendations upstream unavailable" });
+  }
 });
 
 export default router;

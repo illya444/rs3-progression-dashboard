@@ -5,6 +5,7 @@ import { normalizeGEPrices } from "@rs3/normalizers";
 import { config } from "../config/config.js";
 import { validateRequest } from "../middleware/validate.js";
 import { cache } from "../services/cache.js";
+import { recordFallbackResponse, recordUpstreamFailure } from "../logger.js";
 
 const router = Router();
 
@@ -22,11 +23,25 @@ router.get("/", validateRequest({ query: geQuerySchema }), async (req, res) => {
     return res.json(cached);
   }
 
-  const raw = await fetchGEPrices(upstreamUrl);
-  const normalized = normalizeGEPrices(raw);
-  await cache.set(cacheKey, normalized, config.cacheTtlSeconds);
-
-  return res.json(normalized);
+  try {
+    const raw = await Promise.race([
+      fetchGEPrices(upstreamUrl),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("GE upstream timeout")), config.upstreamTimeoutMs)
+      )
+    ]);
+    const normalized = normalizeGEPrices(raw);
+    await cache.set(cacheKey, normalized, config.cacheTtlSeconds);
+    return res.json(normalized);
+  } catch (error) {
+    recordUpstreamFailure("ge", error);
+    const fallback = await cache.get<unknown[]>(cacheKey);
+    if (fallback) {
+      recordFallbackResponse("ge");
+      return res.json(fallback);
+    }
+    return res.status(502).json({ error: "GE upstream unavailable" });
+  }
 });
 
 export default router;

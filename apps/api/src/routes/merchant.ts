@@ -5,6 +5,7 @@ import { normalizeMerchant } from "@rs3/normalizers";
 import { config } from "../config/config.js";
 import { validateRequest } from "../middleware/validate.js";
 import { cache } from "../services/cache.js";
+import { recordFallbackResponse, recordUpstreamFailure } from "../logger.js";
 
 const router = Router();
 
@@ -22,11 +23,25 @@ router.get("/", validateRequest({ query: merchantQuerySchema }), async (req, res
     return res.json(cached);
   }
 
-  const raw = await fetchMerchantStock(upstreamUrl);
-  const normalized = normalizeMerchant(raw);
-  await cache.set(cacheKey, normalized, config.cacheTtlSeconds);
-
-  return res.json(normalized);
+  try {
+    const raw = await Promise.race([
+      fetchMerchantStock(upstreamUrl),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Merchant upstream timeout")), config.upstreamTimeoutMs)
+      )
+    ]);
+    const normalized = normalizeMerchant(raw);
+    await cache.set(cacheKey, normalized, config.cacheTtlSeconds);
+    return res.json(normalized);
+  } catch (error) {
+    recordUpstreamFailure("merchant", error);
+    const fallback = await cache.get<{ items: unknown[] }>(cacheKey);
+    if (fallback) {
+      recordFallbackResponse("merchant");
+      return res.json(fallback);
+    }
+    return res.status(502).json({ error: "Merchant upstream unavailable" });
+  }
 });
 
 export default router;
