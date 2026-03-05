@@ -1,193 +1,62 @@
 [
   {
-    "id": "the-restless-ghost",
-    "name": "The Restless Ghost",
-    "prereqQuests": [],
-    "skillReqs": {},
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "priest-in-peril",
-    "name": "Priest in Peril",
-    "prereqQuests": [],
-    "skillReqs": {},
-    "unlockTags": ["quest_unlock", "sunspear"],
-    "notes": "Access to Morytania"
-  },
-  {
-    "id": "temple-at-senntisten",
-    "name": "Temple at Senntisten",
-    "prereqQuests": ["the-restless-ghost"],
-    "skillReqs": {
-      "magic": 50
-    },
-    "unlockTags": ["curses", "pvm_engine"]
-  },
-  {
-    "id": "plague-city",
-    "name": "Plague City",
-    "prereqQuests": [],
-    "skillReqs": {},
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "biohazard",
-    "name": "Biohazard",
-    "prereqQuests": ["plague-city"],
-    "skillReqs": {},
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "underground-pass",
-    "name": "Underground Pass",
-    "prereqQuests": ["biohazard"],
-    "skillReqs": {
-      "agility": 50
-    },
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "regicide",
-    "name": "Regicide",
-    "prereqQuests": ["underground-pass"],
-    "skillReqs": {},
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "roving-elves",
-    "name": "Roving Elves",
-    "prereqQuests": ["regicide"],
-    "skillReqs": {},
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "mourning-ends-part-i",
-    "name": "Mourning's End Part I",
-    "prereqQuests": ["roving-elves"],
-    "skillReqs": {},
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "mourning-ends-part-ii",
-    "name": "Mourning's End Part II",
-    "prereqQuests": ["mourning-ends-part-i"],
-    "skillReqs": {},
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "within-the-light",
-    "name": "Within the Light",
-    "prereqQuests": ["mourning-ends-part-ii"],
-    "skillReqs": {
-      "summoning": 70
-    },
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "making-history",
-    "name": "Making History",
-    "prereqQuests": ["the-restless-ghost", "priest-in-peril"],
-    "skillReqs": {},
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "catapult-construction",
-    "name": "Catapult Construction",
-    "prereqQuests": ["regicide"],
-    "skillReqs": {
-      "construction": 5
-    },
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "plagues-end",
-    "name": "Plague's End",
-    "prereqQuests": ["within-the-light", "making-history", "catapult-construction"],
-    "skillReqs": {
-      "agility": 75,
-      "construction": 75,
-      "crafting": 75,
-      "dungeoneering": 75,
-      "herblore": 75,
-      "mining": 75,
-      "prayer": 75,
-      "ranged": 75,
-      "summoning": 75,
-      "woodcutting": 75
-    },
-    "unlockTags": ["prifddinas", "infrastructure"],
-    "notes": "High-priority city unlock"
-  },
-  {
-    "id": "all-fired-up",
-    "name": "All Fired Up",
-    "prereqQuests": ["priest-in-peril"],
-    "skillReqs": {
-      "firemaking": 43
-    },
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "shield-of-arrav",
-    "name": "Shield of Arrav",
-    "prereqQuests": [],
-    "skillReqs": {},
-    "unlockTags": ["quest_unlock"]
-  },
-  {
-    "id": "defender-of-varrock",
+    "id": "defender_of_varrock",
     "name": "Defender of Varrock",
-    "prereqQuests": ["shield-of-arrav"],
-    "skillReqs": {
-      "agility": 51,
-      "hunter": 51,
-      "mining": 15,
-      "smithing": 54
+    "difficulty": "master",
+    "questPoints": 1,
+    "prerequisites": [
+      "shield_of_arrav",
+      "the_knights_sword"
+    ],
+    "skillRequirements": {
+      "smithing": 59,
+      "mining": 51
     },
-    "unlockTags": ["quest_unlock"]
+    "rewards": {
+      "questPoints": 1,
+      "xp": [
+        { "skill": "smithing", "xp": 15000 }
+      ],
+      "unlocks": [
+        "varrock_museum_access"
+      ]
+    }
   },
   {
-    "id": "branches-of-darkmeyer",
-    "name": "Branches of Darkmeyer",
-    "prereqQuests": ["all-fired-up"],
-    "skillReqs": {
-      "agility": 67
+    "id": "while_guthix_sleeps",
+    "name": "While Guthix Sleeps",
+    "difficulty": "grandmaster",
+    "questPoints": 5,
+    "prerequisites": [
+      "defender_of_varrock"
+    ],
+    "skillRequirements": {
+      "summoning": 23,
+      "slayer": 60
     },
-    "unlockTags": ["quest_unlock", "sunspear"]
+    "rewards": {
+      "questPoints": 5,
+      "xp": [],
+      "unlocks": [
+        "stone_of_jas_storyline"
+      ]
+    }
   },
   {
-    "id": "the-lord-of-vampyrium",
-    "name": "The Lord of Vampyrium",
-    "prereqQuests": ["branches-of-darkmeyer"],
-    "skillReqs": {
-      "agility": 70
-    },
-    "unlockTags": ["quest_unlock", "sunspear"]
-  },
-  {
-    "id": "river-of-blood",
-    "name": "River of Blood",
-    "prereqQuests": ["the-lord-of-vampyrium", "defender-of-varrock", "all-fired-up"],
-    "skillReqs": {
-      "constitution": 80,
-      "herblore": 80,
-      "attack": 78,
-      "ranged": 78,
-      "magic": 78,
-      "firemaking": 76,
-      "fletching": 75,
-      "mining": 72
-    },
-    "unlockTags": ["sunspear", "pvm_engine"],
-    "notes": "Sunspear progression and Darkmeyer line capstone"
-  },
-  {
-    "id": "impressing-the-locals",
-    "name": "Impressing the Locals",
-    "prereqQuests": [],
-    "skillReqs": {
-      "construction": 90
-    },
-    "unlockTags": ["ports", "infrastructure"]
+    "id": "ritual_of_the_mahjarrat",
+    "name": "Ritual of the Mahjarrat",
+    "difficulty": "grandmaster",
+    "questPoints": 5,
+    "prerequisites": [
+      "while_guthix_sleeps"
+    ],
+    "skillRequirements": {},
+    "rewards": {
+      "questPoints": 5,
+      "xp": [],
+      "unlocks": [
+        "mahjarrat_storyline"
+      ]
+    }
   }
 ]

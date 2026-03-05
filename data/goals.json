@@ -1,0 +1,24 @@
+{
+  "quest_cape": {
+    "description": "Complete all quests",
+    "requiredQuests": "ALL"
+  },
+  "overload_unlock": {
+    "description": "Unlock overload potions",
+    "skillRequirements": {
+      "herblore": 96
+    }
+  },
+  "pvm_ready": {
+    "description": "Prepare account for high-level PvM",
+    "requiredQuests": [
+      "temple_at_senntisten",
+      "the_light_within"
+    ],
+    "skillRequirements": {
+      "prayer": 95,
+      "summoning": 96,
+      "herblore": 96
+    }
+  }
+}
