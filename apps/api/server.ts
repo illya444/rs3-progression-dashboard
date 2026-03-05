@@ -1,8 +1,19 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { fetchProfile, fetchQuests } from "@rs3/connectors";
-import { getNextQuestTargets, getNextTargets } from "@rs3/core";
+import {
+  buildQuestGraph,
+  getCompletedQuestIds,
+  getNextTargets,
+  getProgressionRecommendations,
+  parseQuestDataset,
+  parseUnlockDataset,
+  resolveQuests
+} from "@rs3/core";
 import { TtlCache } from "./cache.js";
 
 dotenv.config();
@@ -17,6 +28,26 @@ const cache = new TtlCache();
 const PROFILE_TTL_MS = 10 * 60 * 1000;
 const QUESTS_TTL_MS = 6 * 60 * 60 * 1000;
 const RM_BASE = "https://apps.runescape.com/runemetrics";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+function resolveDataPath(fileName: string): string {
+  const candidates = [
+    resolve(__dirname, "../../data", fileName),
+    resolve(__dirname, "../../../data", fileName)
+  ];
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) return candidate;
+  }
+  throw new Error(`Could not resolve data file "${fileName}" from ${__dirname}`);
+}
+
+const QUEST_DATASET_PATH = resolveDataPath("quests.json");
+const UNLOCK_DATASET_PATH = resolveDataPath("unlocks.json");
+const QUEST_GRAPH = buildQuestGraph(parseQuestDataset(JSON.parse(readFileSync(QUEST_DATASET_PATH, "utf8"))));
+const UNLOCKS = parseUnlockDataset(
+  JSON.parse(readFileSync(UNLOCK_DATASET_PATH, "utf8")),
+  new Set(QUEST_GRAPH.nodesById.keys())
+);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
@@ -97,10 +128,27 @@ app.get("/targets/:username", async (req, res) => {
       cache.set(questKey, quests, QUESTS_TTL_MS);
     }
 
-    const recommendations = getNextQuestTargets(profile, quests);
+    const analysis = getProgressionRecommendations(profile, quests, QUEST_GRAPH, UNLOCKS);
+    const completedQuestIds = getCompletedQuestIds(quests, QUEST_GRAPH);
+    const resolved = resolveQuests(profile, QUEST_GRAPH, completedQuestIds);
+    const blockedTopReasons = resolved.missingRequirements
+      .flatMap((m) => {
+        const skillReasons = m.missingSkills.map(
+          (s) => `${m.questName}: train ${s.skill} ${s.current}->${s.required}`
+        );
+        const questReasons = m.missingPrereqQuestIds.map((qid) => {
+          const q = QUEST_GRAPH.nodesById.get(qid);
+          return `${m.questName}: complete prerequisite ${q?.name ?? qid}`;
+        });
+        return [...skillReasons, ...questReasons];
+      })
+      .slice(0, 3);
+
     res.json({
-      player: username.toLowerCase(),
-      recommendations
+      username: username.toLowerCase(),
+      fetchedAtIso: profile.fetchedAtIso,
+      recommendations: analysis.recommendations,
+      blockedTopReasons
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";

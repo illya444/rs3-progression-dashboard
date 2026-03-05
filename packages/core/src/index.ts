@@ -5,3 +5,6 @@ export * from "./analysis/nextQuestTargets.js";
 export * from "./questGraph/questDataset.js";
 export * from "./questGraph/questGraphBuilder.js";
 export * from "./questGraph/questResolver.js";
+export * from "./unlocks/unlockDataset.js";
+export * from "./unlocks/unlockResolver.js";
+export * from "./unlocks/unlockScoring.js";

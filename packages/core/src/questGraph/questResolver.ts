@@ -1,107 +1,106 @@
 import type { PlayerSnapshot } from "../models/player.js";
 import type { QuestSnapshot } from "../models/quests.js";
-import type { QuestGraph, QuestNode } from "./questGraphBuilder.js";
+import type { BlockedReason, PlayerSkills, QuestGraph, QuestNode } from "./questGraphBuilder.js";
 
-export type BlockedQuest = {
-  quest: QuestNode;
+export type MissingRequirement = {
+  questId: string;
+  questName: string;
   missingSkills: Array<{ skill: string; current: number; required: number }>;
-  missingQuests: string[];
+  missingPrereqQuestIds: string[];
 };
 
-const SKILL_NAME_BY_KEY: Record<string, string> = {
-  agility: "Agility",
-  attack: "Attack",
-  construction: "Construction",
-  constitution: "Constitution",
-  crafting: "Crafting",
-  defence: "Defence",
-  divination: "Divination",
-  dungeoneering: "Dungeoneering",
-  farming: "Farming",
-  firemaking: "Firemaking",
-  fishing: "Fishing",
-  fletching: "Fletching",
-  herblore: "Herblore",
-  hunter: "Hunter",
-  invention: "Invention",
-  magic: "Magic",
-  mining: "Mining",
-  necromancy: "Necromancy",
-  prayer: "Prayer",
-  ranged: "Ranged",
-  runecrafting: "Runecrafting",
-  slayer: "Slayer",
-  smithing: "Smithing",
-  strength: "Strength",
-  summoning: "Summoning",
-  thieving: "Thieving",
-  woodcutting: "Woodcutting"
+export type QuestResolution = {
+  availableQuests: QuestNode[];
+  blockedQuests: QuestNode[];
+  missingRequirements: MissingRequirement[];
 };
 
-function getPlayerSkillLevel(player: PlayerSnapshot, skillKey: string): number {
-  const targetName = SKILL_NAME_BY_KEY[skillKey] ?? skillKey;
-  const skill = player.skills.find((s) => s.name.toLowerCase() === targetName.toLowerCase());
-  return skill?.level ?? 0;
+const UNLOCK_TAG_PRIORITY: Record<string, number> = {
+  prifddinas: 1,
+  curses: 2,
+  sunspear: 3,
+  invention: 4,
+  ports: 5
+};
+
+function toPlayerSkills(player: PlayerSnapshot): PlayerSkills {
+  const skills: PlayerSkills = {};
+  for (const skill of player.skills) {
+    skills[skill.name.toLowerCase()] = skill.level;
+  }
+  return skills;
 }
 
-export function getCompletedQuestNames(questSnapshot?: QuestSnapshot): Set<string> {
-  const completed = (questSnapshot?.quests ?? [])
-    .filter((q) => q.status === "COMPLETED")
-    .map((q) => q.title);
-  return new Set(completed);
+export function getCompletedQuestIds(questSnapshot: QuestSnapshot | undefined, questGraph: QuestGraph): Set<string> {
+  const completed = new Set<string>();
+  for (const q of questSnapshot?.quests ?? []) {
+    if (q.status !== "COMPLETED") continue;
+    const id = questGraph.idByName.get(q.title);
+    if (id) completed.add(id);
+  }
+  return completed;
 }
 
-function getQuestBlockers(
-  player: PlayerSnapshot,
-  quest: QuestNode,
-  completedQuestNames: Set<string>
-): BlockedQuest {
-  const missingSkills = Object.entries(quest.skillRequirements)
-    .map(([skill, required]) => {
-      const current = getPlayerSkillLevel(player, skill);
-      return { skill, current, required };
-    })
-    .filter((gap) => gap.current < gap.required);
-
-  const missingQuests = quest.questRequirements.filter((q) => !completedQuestNames.has(q));
-
-  return { quest, missingSkills, missingQuests };
+function bestTagPriority(unlockTags: string[]): number {
+  let best = Number.MAX_SAFE_INTEGER;
+  for (const tag of unlockTags) {
+    const p = UNLOCK_TAG_PRIORITY[tag] ?? 99;
+    if (p < best) best = p;
+  }
+  return best;
 }
 
-export function getAvailableQuests(
+function sortQuestsDeterministically(questGraph: QuestGraph, items: QuestNode[]): QuestNode[] {
+  return [...items].sort((a, b) => {
+    const priorityDiff = bestTagPriority(a.unlockTags) - bestTagPriority(b.unlockTags);
+    if (priorityDiff !== 0) return priorityDiff;
+
+    const depthA = questGraph.depthById.get(a.id) ?? 0;
+    const depthB = questGraph.depthById.get(b.id) ?? 0;
+    if (depthA !== depthB) return depthA - depthB;
+
+    return a.name.localeCompare(b.name);
+  });
+}
+
+export function resolveQuests(
   player: PlayerSnapshot,
   questGraph: QuestGraph,
-  completedQuestNames: Set<string>
-): QuestNode[] {
-  const available: QuestNode[] = [];
+  completedQuestIds: Set<string>
+): QuestResolution {
+  const playerSkills = toPlayerSkills(player);
+  const availableQuests: QuestNode[] = [];
+  const blockedQuests: QuestNode[] = [];
+  const missingRequirements: MissingRequirement[] = [];
 
-  for (const quest of questGraph.nodesByName.values()) {
-    if (completedQuestNames.has(quest.name)) continue;
+  for (const quest of questGraph.nodesById.values()) {
+    if (completedQuestIds.has(quest.id)) continue;
 
-    const blockers = getQuestBlockers(player, quest, completedQuestNames);
-    if (blockers.missingSkills.length === 0 && blockers.missingQuests.length === 0) {
-      available.push(quest);
+    const reasons: BlockedReason = questGraph.getBlockedReasons(quest.id, playerSkills, completedQuestIds);
+    const blocked = reasons.missingSkills.length > 0 || reasons.missingPrereqQuestIds.length > 0;
+
+    if (!blocked) {
+      availableQuests.push(quest);
+      continue;
     }
+
+    blockedQuests.push(quest);
+    missingRequirements.push({
+      questId: quest.id,
+      questName: quest.name,
+      missingSkills: reasons.missingSkills,
+      missingPrereqQuestIds: reasons.missingPrereqQuestIds
+    });
   }
 
-  return available.sort((a, b) => a.name.localeCompare(b.name));
-}
+  const sortedAvailable = sortQuestsDeterministically(questGraph, availableQuests);
+  const sortedBlocked = sortQuestsDeterministically(questGraph, blockedQuests);
+  const missingById = new Map(missingRequirements.map((m) => [m.questId, m]));
+  const sortedMissing = sortedBlocked.map((q) => missingById.get(q.id)).filter((m): m is MissingRequirement => !!m);
 
-export function getBlockedQuests(
-  player: PlayerSnapshot,
-  questGraph: QuestGraph,
-  completedQuestNames: Set<string>
-): BlockedQuest[] {
-  const blocked: BlockedQuest[] = [];
-
-  for (const quest of questGraph.nodesByName.values()) {
-    if (completedQuestNames.has(quest.name)) continue;
-
-    const blockers = getQuestBlockers(player, quest, completedQuestNames);
-    if (blockers.missingSkills.length > 0 || blockers.missingQuests.length > 0) {
-      blocked.push(blockers);
-    }
-  }
-
-  return blocked;
+  return {
+    availableQuests: sortedAvailable,
+    blockedQuests: sortedBlocked,
+    missingRequirements: sortedMissing
+  };
 }

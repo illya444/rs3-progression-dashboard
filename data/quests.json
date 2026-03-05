@@ -1,95 +1,193 @@
 [
   {
-    "name": "Priest in Peril",
-    "requirements": {
-      "skills": {},
-      "quests": []
-    },
-    "rewards": {
-      "area_unlock": "Morytania"
-    }
-  },
-  {
-    "name": "Nature Spirit",
-    "requirements": {
-      "skills": {
-        "crafting": 18
-      },
-      "quests": ["Priest in Peril"]
-    },
-    "rewards": {
-      "area_unlock": "Mort Myre Swamp"
-    }
-  },
-  {
+    "id": "the-restless-ghost",
     "name": "The Restless Ghost",
-    "requirements": {
-      "skills": {},
-      "quests": []
-    },
-    "rewards": {
-      "item_unlock": "Ghostspeak amulet"
-    }
+    "prereqQuests": [],
+    "skillReqs": {},
+    "unlockTags": ["quest_unlock"]
   },
   {
+    "id": "priest-in-peril",
+    "name": "Priest in Peril",
+    "prereqQuests": [],
+    "skillReqs": {},
+    "unlockTags": ["quest_unlock", "sunspear"],
+    "notes": "Access to Morytania"
+  },
+  {
+    "id": "temple-at-senntisten",
     "name": "Temple at Senntisten",
-    "requirements": {
-      "skills": {
-        "magic": 50
-      },
-      "quests": ["The Restless Ghost"]
+    "prereqQuests": ["the-restless-ghost"],
+    "skillReqs": {
+      "magic": 50
     },
-    "rewards": {
-      "ability_unlock": "Ancient Curses"
-    }
+    "unlockTags": ["curses", "pvm_engine"]
   },
   {
-    "name": "Underground Pass",
-    "requirements": {
-      "skills": {
-        "agility": 50
-      },
-      "quests": []
-    },
-    "rewards": {
-      "area_unlock": "West Ardougne access"
-    }
+    "id": "plague-city",
+    "name": "Plague City",
+    "prereqQuests": [],
+    "skillReqs": {},
+    "unlockTags": ["quest_unlock"]
   },
   {
+    "id": "biohazard",
     "name": "Biohazard",
-    "requirements": {
-      "skills": {},
-      "quests": ["Underground Pass"]
-    },
-    "rewards": {
-      "area_unlock": "Ardougne gate access"
-    }
+    "prereqQuests": ["plague-city"],
+    "skillReqs": {},
+    "unlockTags": ["quest_unlock"]
   },
   {
+    "id": "underground-pass",
+    "name": "Underground Pass",
+    "prereqQuests": ["biohazard"],
+    "skillReqs": {
+      "agility": 50
+    },
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "regicide",
+    "name": "Regicide",
+    "prereqQuests": ["underground-pass"],
+    "skillReqs": {},
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "roving-elves",
+    "name": "Roving Elves",
+    "prereqQuests": ["regicide"],
+    "skillReqs": {},
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "mourning-ends-part-i",
+    "name": "Mourning's End Part I",
+    "prereqQuests": ["roving-elves"],
+    "skillReqs": {},
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "mourning-ends-part-ii",
+    "name": "Mourning's End Part II",
+    "prereqQuests": ["mourning-ends-part-i"],
+    "skillReqs": {},
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "within-the-light",
+    "name": "Within the Light",
+    "prereqQuests": ["mourning-ends-part-ii"],
+    "skillReqs": {
+      "summoning": 70
+    },
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "making-history",
+    "name": "Making History",
+    "prereqQuests": ["the-restless-ghost", "priest-in-peril"],
+    "skillReqs": {},
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "catapult-construction",
+    "name": "Catapult Construction",
+    "prereqQuests": ["regicide"],
+    "skillReqs": {
+      "construction": 5
+    },
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "plagues-end",
     "name": "Plague's End",
-    "requirements": {
-      "skills": {
-        "agility": 75,
-        "construction": 75,
-        "crafting": 75,
-        "herblore": 75
-      },
-      "quests": ["Underground Pass", "Biohazard", "Temple at Senntisten"]
+    "prereqQuests": ["within-the-light", "making-history", "catapult-construction"],
+    "skillReqs": {
+      "agility": 75,
+      "construction": 75,
+      "crafting": 75,
+      "dungeoneering": 75,
+      "herblore": 75,
+      "mining": 75,
+      "prayer": 75,
+      "ranged": 75,
+      "summoning": 75,
+      "woodcutting": 75
     },
-    "rewards": {
-      "area_unlock": "Prifddinas"
-    }
+    "unlockTags": ["prifddinas", "infrastructure"],
+    "notes": "High-priority city unlock"
   },
   {
-    "name": "Player Owned Ports",
-    "requirements": {
-      "skills": {
-        "construction": 90
-      },
-      "quests": []
+    "id": "all-fired-up",
+    "name": "All Fired Up",
+    "prereqQuests": ["priest-in-peril"],
+    "skillReqs": {
+      "firemaking": 43
     },
-    "rewards": {
-      "system_unlock": "Player Owned Ports"
-    }
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "shield-of-arrav",
+    "name": "Shield of Arrav",
+    "prereqQuests": [],
+    "skillReqs": {},
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "defender-of-varrock",
+    "name": "Defender of Varrock",
+    "prereqQuests": ["shield-of-arrav"],
+    "skillReqs": {
+      "agility": 51,
+      "hunter": 51,
+      "mining": 15,
+      "smithing": 54
+    },
+    "unlockTags": ["quest_unlock"]
+  },
+  {
+    "id": "branches-of-darkmeyer",
+    "name": "Branches of Darkmeyer",
+    "prereqQuests": ["all-fired-up"],
+    "skillReqs": {
+      "agility": 67
+    },
+    "unlockTags": ["quest_unlock", "sunspear"]
+  },
+  {
+    "id": "the-lord-of-vampyrium",
+    "name": "The Lord of Vampyrium",
+    "prereqQuests": ["branches-of-darkmeyer"],
+    "skillReqs": {
+      "agility": 70
+    },
+    "unlockTags": ["quest_unlock", "sunspear"]
+  },
+  {
+    "id": "river-of-blood",
+    "name": "River of Blood",
+    "prereqQuests": ["the-lord-of-vampyrium", "defender-of-varrock", "all-fired-up"],
+    "skillReqs": {
+      "constitution": 80,
+      "herblore": 80,
+      "attack": 78,
+      "ranged": 78,
+      "magic": 78,
+      "firemaking": 76,
+      "fletching": 75,
+      "mining": 72
+    },
+    "unlockTags": ["sunspear", "pvm_engine"],
+    "notes": "Sunspear progression and Darkmeyer line capstone"
+  },
+  {
+    "id": "impressing-the-locals",
+    "name": "Impressing the Locals",
+    "prereqQuests": [],
+    "skillReqs": {
+      "construction": 90
+    },
+    "unlockTags": ["ports", "infrastructure"]
   }
 ]
